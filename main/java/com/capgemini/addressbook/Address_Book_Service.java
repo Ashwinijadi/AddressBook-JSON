@@ -1,5 +1,6 @@
 package com.capgemini.addressbook;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
@@ -22,9 +23,8 @@ public class Address_Book_Service {
 		addressBookDBService = addressBookDBService.getInstance();
 	}
 
-	public List<Address_Book_Data> readData() {
+	public List<Address_Book_Data> readData() throws SQLException{
 		this.addressBookList = addressBookDBService.readData();
-
 		return addressBookList;
 
 	}

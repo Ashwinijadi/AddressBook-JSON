@@ -8,8 +8,13 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
 import com.capgemini.addressbook.Address_Book_Service.*;
+
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -43,7 +48,7 @@ public class AddressBookTest {
 		Address_Book_Service employeePayrollService;
 		employeePayrollService = new Address_Book_Service(Arrays.asList(arrayOfEmps));
 		long entries = employeePayrollService.countEntries(IOService.REST_IO);
-		Assert.assertEquals(3, entries);
+		Assert.assertEquals(4, entries);
 	}
 
 	@Test
@@ -60,6 +65,57 @@ public class AddressBookTest {
 		addressBookData = new Gson().fromJson(response.asString(), Address_Book_Data.class);
 		addressBookService.addContactToJSONServer(addressBookData, IOService.REST_IO);
 		long entries = addressBookService.countEntries(IOService.REST_IO);
-		Assert.assertEquals(2, entries);
+		Assert.assertEquals(3, entries);
 	}
+
+	@Test
+	public void givenAddressBookInDB_WhenRetrieved_ShouldMatchAddressBookCount() throws SQLException {
+		Address_Book_Service addressBookService = new Address_Book_Service();
+		List<Address_Book_Data> addressBookData = addressBookService.readData();
+		System.out.println(addressBookData);
+		Assert.assertEquals(4, addressBookData.size());
+	}
+
+	@Test
+	public void givenNewCityForPerson_WhenUpdatedUsingPreparedStatement_ShouldSyncWithDB() throws SQLException {
+		Address_Book_Service addressBookService = new Address_Book_Service();
+		List<Address_Book_Data> addressBookData = addressBookService.readData();
+		addressBookService.update("Ashu", "hyderabad");
+		boolean result = addressBookService.checkContactInSyncWithDB("Ashu");
+		Assert.assertTrue(result);
+		System.out.println(addressBookData);
+	}
+
+	@Test
+	public void givenDateRange_WhenRetrieved_ShouldMatchEmployeeCount() throws SQLException {
+		Address_Book_Service addressBookService = new Address_Book_Service();
+		addressBookService.readData();
+		LocalDate startDate = LocalDate.of(2018, 01, 01);
+		LocalDate endDate = LocalDate.now();
+		List<Address_Book_Data> addressBookData = addressBookService.readContactDataForDateRange(startDate, endDate);
+		Assert.assertEquals(3, addressBookData.size());
+		System.out.println(addressBookData);
+	}
+
+	@Test
+	public void givenAddressBook_RetrieveNumberOfContacts_ByCityOrState() throws SQLException {
+		Address_Book_Service addressBookService = new Address_Book_Service();
+		addressBookService.readData();
+		Map<String, Integer> addressByCityMap = addressBookService.getAddressByCityOrState();
+		Integer count = 1;
+		Assert.assertEquals(count, addressByCityMap.get("Warangal"));
+		System.out.println(addressByCityMap);
+	}
+
+	@Test
+	public void givenNewContact_WhenAdded_ShouldSyncWithDB() throws SQLException {
+		Address_Book_Service addressBookService = new Address_Book_Service();
+		addressBookService.readData();
+		LocalDate date = LocalDate.now();
+		addressBookService.addContactToAddressBook("sneha", " A ", "ssr", date, "Adilabad", "Telangana", 5001015,
+				885699227, "sneha@gmail", "Family");
+		boolean result = addressBookService.checkContactInSyncWithDB("sneha");
+		Assert.assertTrue(result);
+	}
+
 }

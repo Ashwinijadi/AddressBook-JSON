@@ -160,7 +160,7 @@ public class AddressBook_DBService {
 			Statement statement = connection.createStatement();
 			String sql = String.format(
 					"insert into address_Book(firstName,lastName,address,date_added,city,state,zip,phoneNumber"
-					+ ",email,type) values ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+							+ ",email,type) values ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
 					firstName, lastName, address, date_added, city, state, zip, phoneNumber, email, type);
 			statement.executeUpdate(sql);
 		} catch (SQLException e) {

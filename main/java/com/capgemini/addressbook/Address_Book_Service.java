@@ -23,7 +23,7 @@ public class Address_Book_Service {
 		addressBookDBService = addressBookDBService.getInstance();
 	}
 
-	public List<Address_Book_Data> readData() throws SQLException{
+	public List<Address_Book_Data> readData() throws SQLException {
 		this.addressBookList = addressBookDBService.readData();
 		return addressBookList;
 
@@ -105,6 +105,11 @@ public class Address_Book_Service {
 			String city, String state, long zip, long phoneNumber, String email, String Type) {
 		addressBookList.add(addressBookDBService.addContact(firstName, lastName, address, date_added, city, state, zip,
 				phoneNumber, email, Type));
+	}
+
+	public void addContactToAddressBook(Address_Book_Data addressBookData, IOService ioService) {
+		if (ioService.equals(IOService.REST_IO))
+			addressBookList.add(addressBookData);
 	}
 
 	public void addContactToJSONServer(Address_Book_Data addressBookData, IOService ioService) {

@@ -69,6 +69,28 @@ public class AddressBookTest {
 	}
 
 	@Test
+	public void givenNewListOfContacts_WhenAdded_ShouldMatch() {
+		Address_Book_Service addressBookService;
+		Address_Book_Data[] arrayOfContacts = getAddressBookList();
+		addressBookService = new Address_Book_Service(Arrays.asList(arrayOfContacts));
+		Address_Book_Data[] addressArrays = {
+				 new Address_Book_Data("Charan", "durgam", "ssr", LocalDate.now(), "Karimnagar", "Telangana",
+							500015, 779984874, "charan@gmail.com", "Family"),
+				 new Address_Book_Data("Rahul", "kk", "ssr", LocalDate.now(), "Warangal", "Telangana",
+							500255, 889984874, "rahuln@gmail.com", "Family"),
+				 new Address_Book_Data("Nithin", "jadi", "dskr", LocalDate.now(), "Hyderabad", "Telangana",
+							500315, 779984874, "nithin@gmail.com", "Family")};
+		for (Address_Book_Data addressData :addressArrays) {
+			Response response = addContactToJsonServer(addressData);
+			int statusCode = response.getStatusCode();
+			Assert.assertEquals(201, statusCode);
+			addressData = new Gson().fromJson(response.asString(),Address_Book_Data.class);
+			addressBookService.addContactToAddressBook(addressData, IOService.REST_IO);
+		}
+		long entries = addressBookService.countEntries(IOService.REST_IO);
+		Assert.assertEquals(6, entries);
+	}
+	@Test
 	public void givenAddressBookInDB_WhenRetrieved_ShouldMatchAddressBookCount() throws SQLException {
 		Address_Book_Service addressBookService = new Address_Book_Service();
 		List<Address_Book_Data> addressBookData = addressBookService.readData();

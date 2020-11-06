@@ -15,6 +15,7 @@ public class Address_Book_Data {
 	String email;
 	String Type;
 	String addressBookName;
+	String id;
 
 	public Address_Book_Data(String firstName, String lastName, String address, String city, String state, long zip,
 			long phoneNumber, String email) {

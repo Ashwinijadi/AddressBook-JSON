@@ -38,8 +38,23 @@ public class Address_Book_Service {
 			addressbookData.address = address;
 	}
 
-	private Address_Book_Data readData(String name) {
+	public void updateContactJsonServer(String firstName, String address, IOService ioService) {
+		if (ioService.equals(IOService.REST_IO)) {
+			Address_Book_Data addressbookData = this.readData(firstName);
+			if (addressbookData != null)
+				addressbookData.address = address;
+		}
+	}
+
+	public Address_Book_Data readData(String name) {
 		return this.addressBookList.stream().filter(contact -> contact.firstName.equals(name)).findFirst().orElse(null);
+	}
+
+	public void deleteContact(String firstName, IOService ioService) {
+		if (ioService.equals(IOService.REST_IO)) {
+			Address_Book_Data addressbookData = this.readData(firstName);
+			addressBookList.remove(addressbookData);
+		}
 	}
 
 	public long countEntries(IOService ioService) {

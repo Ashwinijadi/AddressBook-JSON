@@ -57,15 +57,15 @@ public class AddressBookTest {
 		Address_Book_Data[] arrayOfContacts = getAddressBookList();
 		addressBookService = new Address_Book_Service(Arrays.asList(arrayOfContacts));
 		Address_Book_Data addressBookData = null;
-		addressBookData = new Address_Book_Data("Charan", "durgam", "ssr", LocalDate.now(), "Karimnagar", "Telangana",
-				500015, 779984874, "charan@gmail.com", "Family");
+		addressBookData = new Address_Book_Data("kumar", "durgam", "ssr", LocalDate.now(), "Karimnagar", "Telangana",
+				500015, 779984874, "kumar@gmail.com", "Family");
 		Response response = addContactToJsonServer(addressBookData);
 		int statusCode = response.getStatusCode();
 		Assert.assertEquals(201, statusCode);
 		addressBookData = new Gson().fromJson(response.asString(), Address_Book_Data.class);
 		addressBookService.addContactToJSONServer(addressBookData, IOService.REST_IO);
 		long entries = addressBookService.countEntries(IOService.REST_IO);
-		Assert.assertEquals(3, entries);
+		Assert.assertEquals(4, entries);
 	}
 
 	@Test
@@ -74,7 +74,7 @@ public class AddressBookTest {
 		Address_Book_Data[] arrayOfContacts = getAddressBookList();
 		addressBookService = new Address_Book_Service(Arrays.asList(arrayOfContacts));
 		Address_Book_Data[] addressArrays = {
-				 new Address_Book_Data("Charan", "durgam", "ssr", LocalDate.now(), "Karimnagar", "Telangana",
+				 new Address_Book_Data("karthik", "durgam", "ssr", LocalDate.now(), "Karimnagar", "Telangana",
 							500015, 779984874, "charan@gmail.com", "Family"),
 				 new Address_Book_Data("Rahul", "kk", "ssr", LocalDate.now(), "Warangal", "Telangana",
 							500255, 889984874, "rahuln@gmail.com", "Family"),
@@ -88,7 +88,7 @@ public class AddressBookTest {
 			addressBookService.addContactToAddressBook(addressData, IOService.REST_IO);
 		}
 		long entries = addressBookService.countEntries(IOService.REST_IO);
-		Assert.assertEquals(6, entries);
+		Assert.assertEquals(7, entries);
 	}
 	@Test
 	public void givenAddressBookInDB_WhenRetrieved_ShouldMatchAddressBookCount() throws SQLException {
@@ -140,4 +140,21 @@ public class AddressBookTest {
 		Assert.assertTrue(result);
 	}
 
+	@Test
+	public void givenNewContact_WhenUpdated_ShouldMatch200Response() {
+		Address_Book_Service addressBookService;
+		Address_Book_Data[] arrayOfContacts = getAddressBookList();
+		addressBookService = new Address_Book_Service(Arrays.asList(arrayOfContacts));
+		addressBookService.updateContactJsonServer("Charan", "ksr", IOService.REST_IO);
+		Address_Book_Data addressBookData = addressBookService.readData("Charan");
+		String contactJson = new Gson().toJson(addressBookData);
+		RequestSpecification request = RestAssured.given();
+		request.header("Content-Type", "application/json");
+		request.body(contactJson);
+		Response response = request.put("/contacts/" + addressBookData.id);
+		int statusCode = response.getStatusCode();
+		Assert.assertEquals(200, statusCode);
+	}
+
+	
 }
